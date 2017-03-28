@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+     xmlns:aop="http://www.springframework.org/schema/aop"
+     xmlns:tx="http://www.springframework.org/schema/tx"
+     xsi:schemaLocation="http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context
+     http://www.springframework.org/schema/context/spring-context.xsd
+     http://www.springframework.org/schema/aop
+     http://www.springframework.org/schema/aop/spring-aop.xsd
+     http://www.springframework.org/schema/tx
+     http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+<!-- spring整合持久层的mapper -->
+	<!-- 加载外部的db.properties文件 -->
+	<context:property-placeholder location="classpath:db.properties"/>
+	<!-- 配置数据源(c3p0连接池) -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="${jdbc.driver}"></property>
+		<property name="jdbcUrl" value="${jdbc.url}"></property>
+		<property name="user" value="${jdbc.username}"></property>
+		<property name="password" value="${jdbc.password}"></property>
+	</bean>
+	<!-- 配置sqlSessionFactory -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 引用数据源 -->
+		<property name="dataSource" ref="dataSource"/>
+		<!-- 注入mybatis核心配置文件 -->
+		<property name="configLocation" value="classpath:mybatis/mybatis-3-config.xml"></property>
+	</bean>
+	
+	<!-- 配置mappeer批量扫描器：
+			扫描指定包下的所有mapper接口,并自动创建代理对象然后交给spring管理,
+			自动扫描后,可以通过mapper类名(首字母小写)即可获取mapper -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- 配置扫描的包路径,多个包逗号隔开即可
+			   规范: 1、mappe类和mapper.xml文件名称必须一致
+			   	  2、必须在同一个目录下-->
+		<property name="basePackage" value="cn.he.practice.mapper"></property>
+		<!-- 配置sqlSessionFactory,使扫描后生成的代理对象能够通过session工厂来进行数据库的CRUD操作 -->
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+	</bean>
+	
+	<!-- 配置对mybatis进行事务管理 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<!-- 引入数据源 -->
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	<!-- 开启事务注解 -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	
+</beans>

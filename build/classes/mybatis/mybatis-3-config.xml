@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<!-- 配置mybatis系统信息 -->
+		<!-- 扫描包路径：要求mapper.xml和mapper.java同名同目录 -->
+		<!-- 设置包的别名 -->
+		<package name="cn.he.practice.entity"></package>
+	</typeAliases>
+</configuration>
